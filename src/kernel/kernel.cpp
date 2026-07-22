@@ -2,9 +2,8 @@ extern "C" {
     void rados_console_init(void);
     void rados_console_print_char(char character);
     void rados_console_print_line(const char* string);
+    int main( int argc, char *argv[ ], char *envp[ ] );
 };
-
-int main( int argc, char *argv[ ], char *envp[ ] );
 
 int main( int argc, char *argv[ ], char *envp[ ] ) {
 
@@ -20,15 +19,20 @@ int main( int argc, char *argv[ ], char *envp[ ] ) {
 };
 
 void rados_console_init(void) {
+    asm("mov ah, 00h \n"
+        "mov al, 07h \n"
+        "int 10h \n");
 
+    asm("mov ah, 01h \n"
+        "mov al, 07h \n"
+        "mov cx, 0007h \n"
+        "int 10h \n");
 }
 
 void rados_console_print_line(const char* string) {
-    char c = '0';
-
     for (int i = 0; string[i] != '\0'; i++)
     {
-        c = string[i];
+        char c = string[i];
 
         rados_console_print_char(c);
     }
@@ -39,9 +43,8 @@ void rados_console_print_line(const char* string) {
 
 void rados_console_print_char(char character) {
     asm("mov ah, 0Eh \n"
-        "mov al, 'A' \n"
+        "mov al, character \n"
         "mov bh, 0 \n"
         "mov bl, 7 \n"
-        "int 0x10 \n"
-        "ret \n");
+        "int 0x10 \n");
 };
