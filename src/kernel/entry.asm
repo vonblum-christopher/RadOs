@@ -1,11 +1,12 @@
 BITS 64
 DEFAULT REL
 
-extern main
+global main
 
-global asm_rad_print_char:function
+extern cppmain
 
-start:
+section .text
+main:
     CLI
     MOV ax, ds
     MOV ss, ax
@@ -13,7 +14,7 @@ start:
     MOV bp, sp
     STI
 
-    CALL main
+    CALL cppmain
 
     CLI
     HLT
@@ -25,3 +26,5 @@ asm_rad_print_char:
     mov bl, 7
     int 10h
     ret
+
+CALL main;

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -v
 # error cancels script
 set -e
 
@@ -20,14 +20,14 @@ mkfs.msdos -C build/floppy.img 1440
 dd if=build/boot.bin of=build/floppy.img bs=512 count=1 conv=notrunc
 
 # c kernel parts
-clang++ -fuse-ld=lld -o build/kernel.o -c src/kernel/kernel.cpp -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
+clang++ -fuse-ld=lld -c src/kernel/kernel.cpp -o build/kernel.o -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
 
 # asm kernel parts
-nasm -f elf64 \
+clang++ \
 src/kernel/entry.asm \
 -o build/entry.o
 
-clang++ -v -fuse-ld=lld build/kernel.o build/entry.o -o build/kernel.bin
+clang++ -v -fuse-ld=lld build/entry.o build/kernel.o -e main -o build/kernel.bin -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
 
 # mount floppy image
 mkdir floppy
