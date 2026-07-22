@@ -1,12 +1,9 @@
-BITS 16
+BITS 64
+DEFAULT REL
 
-section _ENTRY CLASS=code
+extern main
 
-extern _cstart_
-
-global entry
-
-entry:
+_start:
     CLI
     MOV ax, ds
     MOV ss, ax
@@ -14,7 +11,7 @@ entry:
     MOV bp, sp
     STI
 
-    CALL _cstart_
+    CALL main
 
     CLI
     HLT
