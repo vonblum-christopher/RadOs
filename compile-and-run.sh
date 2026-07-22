@@ -20,25 +20,21 @@ mkfs.msdos -C build/floppy.img 1440
 dd if=build/boot.bin of=build/floppy.img bs=512 count=1 conv=notrunc
 
 # c kernel parts
-clang++ -fuse-ld=lld -o build/mainc.o -c src/kernel/main.cpp -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
-#gcc src/kernel/stdio/stdio.c -o build/kernel/c/stdio.obj
+clang++ -fuse-ld=lld -o build/kernel.o -c src/kernel/kernel.cpp -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
 
 # asm kernel parts
-nasm -f elf64 src/kernel/main.asm -o build/maina.o
+nasm -f elf64 \
+src/kernel/entry.asm \
+-o build/entry.o
 
-# link everything
-#clang++ -fuse-ld=lld -fPIC -shared \
-#-o build/kernel.o -lc \
-#build/mainc.o \
-#build/maina.o
-
-clang++ -v -fuse-ld=lld build/maina.o build/mainc.o -o build/kernel.bin
+clang++ -v -fuse-ld=lld build/kernel.o build/entry.o -o build/kernel.bin
 
 # mount floppy image
 mkdir floppy
 
 mount build/floppy.img floppy
 
+# add kernel.bin
 cat build/kernel.bin >> floppy/kernel.bin
 
 umount floppy
@@ -47,7 +43,3 @@ rm -R floppy
 
 # boot from floppy image
 qemu-system-x86_64 -fda build/floppy.img
-
-#nasm -f elf64 datei.asm -o asm_teil.o
-#gcc -c datei.c -o c_teil.o
-#ld asm_teil.o c_teil.o -o ausgabe -lc
