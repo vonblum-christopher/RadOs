@@ -20,14 +20,12 @@ mkfs.msdos -C build/floppy.img 1440
 dd if=build/boot.bin of=build/floppy.img bs=512 count=1 conv=notrunc
 
 # c kernel parts
-clang++ -fuse-ld=lld -c src/kernel/kernel.cpp -o build/kernel.o -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
+clang++ -fuse-ld=lld -c src/kernel/kernel.cpp -o build/kernel.bin -e cppmain -masm=intel -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
 
-# asm kernel parts
-clang++ \
-src/kernel/entry.asm \
--o build/entry.o
-
-clang++ -v -fuse-ld=lld build/entry.o build/kernel.o -e main -o build/kernel.bin -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
+# clean mountpoint for floppy image
+if [ -d "floppy" ]; then
+   rm -R floppy
+fi
 
 # mount floppy image
 mkdir floppy
@@ -38,8 +36,6 @@ mount build/floppy.img floppy
 cat build/kernel.bin >> floppy/kernel.bin
 
 umount floppy
-
-rm -R floppy
 
 # boot from floppy image
 qemu-system-x86_64 -fda build/floppy.img
