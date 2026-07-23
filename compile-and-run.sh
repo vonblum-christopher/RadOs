@@ -13,33 +13,18 @@ mkdir build
 #compile the bootloader
 nasm src/bootloader/boot.asm -f bin -o build/BOOT.BIN
 
-# create a bootable floppy
-mkfs.msdos -C build/RadOs.img 1440
-
-#write bootloader to floppy
-dd if=build/BOOT.BIN of=build/RadOs.img bs=512 count=1 conv=notrunc
-
 # c kernel parts
 clang++ -c src/kernel/kernel.cpp -o build/kernel.o -fuse-ld=lld -masm=intel -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
-
 objcopy -O binary build/kernel.o build/KERNEL.BIN
 
-dd if=build/KERNEL.BIN of=build/RadOs.img bs=512 count=1 skip=512 conv=notrunc
+if [ -d "release" ]; then
+   rm -R release
+fi
 
-# clean mountpoint for floppy image
-#if [ -d "floppy" ]; then
-#  rm -R floppy
-#fi
+mkdir release
 
-# mount floppy image
-# mkdir floppy
-
-# mount build/RadOs.img floppy
-
-# add kernel.bin
-# cat build/KERNEL.BIN >> floppy/KERNEL.BIN
-
-# umount floppy
-
+# create bootable iso image
+#mkisofs -o release/RadOs.iso -no-emul-boot -boot-load-size 4 -b build/BOOT.BIN ./build
+mkisofs -o bootable.iso -b build/BOOT.BIN -no-emul-boot -boot-load-size 4 -boot-info-table -R -J src
 # boot from floppy image
-qemu-system-x86_64 -fda build/RadOs.img
+qemu-system-x86_64 -cdrom release/RadOs.iso

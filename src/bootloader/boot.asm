@@ -1,52 +1,27 @@
-BITS 64
-ORG 0x7C00
+bits 16                        ; Tell NASM we are in 16-bit Real Mode
+org 0x7C00                     ; Tell the assembler where the BIOS loads us
+
 DEFAULT REL
 
-section .text
-main:
-    CLI
-    MOV ax, ds
-    MOV ss, ax
-    MOV sp, 0
-    MOV bp, sp
+start:
+    mov si, message            ; Point SI to our message string
+    mov ah, 0x0E               ; BIOS function 0x0E: Print character in TTY mode
 
-    sti
+.print_char:
+    lodsb                      ; Load next byte from SI into AL
+    or al, al                  ; Check if character is zero (end of string)
+    jz .halt                   ; If zero, jump to halt
+    int 0x10                   ; Call BIOS video interrupt to print character
+    jmp .print_char            ; Loop to print next character
 
-    mov ah, 00h
-    mov al, 07h
-    int 10h
+.halt:
+    cli                        ; Disable interrupts
+    hlt                        ; Halt the CPU
 
-    mov ah, 01h
-    mov al, 07h
-    mov cx, 0007h
-    int 10h
+message:
+    db 'RadOs booting...', 0      ; The string to print, followed by a null terminator
 
-    mov ah, 0Eh
-    mov al, 'B'
-    mov bh, 0
-    mov bl, 7
-    int 10h
+jmp start
 
-    ;CALL asm_rad_print_char;
-    ret
-
-;asm_rad_print_char:
-;    mov ah, 0Eh
-;    mov al, 'B'
-;    mov bh, 0
-;    mov bl, 7
-;   int 10h
-;  ret
-
-; ------------------------------------------------------------------
-; END OF BOOT SECTOR AND BUFFER START
-
-	times 510-($-$$) db 0	; Pad remainder of boot sector with zeros
-	dw 0AA55h		; Boot signature (DO NOT CHANGE!)
-
-
-buffer:				; Disk buffer begins (8k after this, stack starts)
-
-
-; ==================================================================
-
+times 510 - ($ - $$) db 0      ; Pad the file with zeros up to 510 bytes
+dw 0xAA55 

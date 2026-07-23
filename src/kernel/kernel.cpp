@@ -2,10 +2,10 @@ extern "C" {
     void rados_console_init(void);
     void rados_console_print_char(char character);
     void rados_console_print_line(const char* string);
-    int main( int argc, char *argv[ ], char *envp[ ] );
+    void cppmain(void);
 };
 
-int main( int argc, char *argv[ ], char *envp[ ] ) {
+void cppmain(void) {
 
     rados_console_init();
 
@@ -14,8 +14,6 @@ int main( int argc, char *argv[ ], char *envp[ ] ) {
     while (true) {
         rados_console_print_line("Hello World!");
     }
-
-    return 0;
 };
 
 void rados_console_init(void) {
