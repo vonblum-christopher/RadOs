@@ -10,16 +10,20 @@ fi
 # create or recreate the build directory
 mkdir build
 
-#compile the bootloader
-nasm src/bootloader/boot.asm -f bin -o build/BOOT.BIN
-
 # c kernel parts
 clang++ -c src/kernel/kernel.cpp -o build/kernel.o -fuse-ld=lld -masm=intel -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
-objcopy -O binary build/kernel.o build/KERNEL.BIN
+objcopy -O binary build/kernel.o build/kernel.bin
 
 cd build
 
-genisoimage -o RadOs.iso -b BOOT.BIN -no-emul-boot -boot-load-size 4 -boot-info-table .
+mkdir boot
+
+# compile the bootloader
+nasm -f bin ./../src/bootloader/boot.asm -o ./boot/boot.bin
+
+cp ./boot/boot.bin boot.bin
+
+genisoimage -o RadOs.iso -b boot.bin -no-emul-boot -boot-load-size 4 -boot-info-table ./boot
 
 cd ..
 
