@@ -17,14 +17,11 @@ nasm src/bootloader/boot.asm -f bin -o build/BOOT.BIN
 clang++ -c src/kernel/kernel.cpp -o build/kernel.o -fuse-ld=lld -masm=intel -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
 objcopy -O binary build/kernel.o build/KERNEL.BIN
 
-if [ -d "release" ]; then
-   rm -R release
-fi
+cd build
 
-mkdir release
+genisoimage -o RadOs.iso -b BOOT.BIN -no-emul-boot -boot-load-size 4 -boot-info-table .
 
-# create bootable iso image
-#mkisofs -o release/RadOs.iso -no-emul-boot -boot-load-size 4 -b build/BOOT.BIN ./build
-mkisofs -o bootable.iso -b build/BOOT.BIN -no-emul-boot -boot-load-size 4 -boot-info-table -R -J src
-# boot from floppy image
-qemu-system-x86_64 -cdrom release/RadOs.iso
+cd ..
+
+# boot from cdrom image
+qemu-system-x86_64 -cdrom build/RadOs.iso
