@@ -3,9 +3,10 @@ section .text
 org 0x7C00                     ; Tell the assembler where the BIOS loads us
 
 start:
+    jmp load_kernel
     mov si, message            ; Point SI to our message string
     mov ah, 0x0E               ; BIOS function 0x0E: Print character in TTY mode
-    jmp load_kernel
+    jmp .print_char
 
 .print_char:
     lodsb                      ; Load next byte from SI into AL
@@ -17,7 +18,7 @@ start:
     ret
 
 message:
-    db 'RadOs booting...', 0      ; The string to print, followed by a null terminator
+    db 'Kernel loaded', 0      ; The string to print, followed by a null terminator
 
 load_kernel:
     incbin './kernel.bin'
