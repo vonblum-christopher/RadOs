@@ -2,18 +2,27 @@ extern "C" {
     void rados_console_init(void);
     void rados_console_print_char(char character);
     void rados_console_print_line(const char* string);
-    void cppmain(void);
+    void rados_init_kernel(void);
+    void rados_main(void);
 };
 
-void cppmain(void) {
+int main(void);
+
+int main(void) {
+    rados_main();
+}
+
+void rados_main(void) {
+    rados_init_kernel();
+
+    rados_console_print_line("Hello from RadOs.");
+};
+
+void rados_init_kernel(void) {
 
     rados_console_init();
 
-    rados_console_print_line("Hello from RadOs.");
-
-    while (true) {
-        rados_console_print_line("Hello World!");
-    }
+    rados_console_print_line("RadOs Kernel initialized.");
 };
 
 void rados_console_init(void) {
