@@ -7,8 +7,9 @@ start:
     ; call main method here somehow
 
 load_kernel:
-    ; Include the kernel binary right after boot code
+kernel_start:
     incbin "kernel.bin"
+kernel_end:
 
 times 510 - ($ - $$) db 0
 dw 0xAA55        ; Boot signature
