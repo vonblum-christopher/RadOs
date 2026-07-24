@@ -13,6 +13,7 @@ int main(void) {
 }
 
 void rados_main(void) {
+rados_main:
     rados_init_kernel();
 
     rados_console_print_line("Hello from RadOs.");
@@ -26,14 +27,14 @@ void rados_init_kernel(void) {
 };
 
 void rados_console_init(void) {
-    asm("mov ah, 00h \n"
-        "mov al, 07h \n"
-        "int 10h \n");
+    asm("mov ah, 00h");
+    asm("mov al, 07h");
+    asm("int 10h");
 
-    asm("mov ah, 01h \n"
-        "mov al, 07h \n"
-        "mov cx, 0007h \n"
-        "int 10h \n");
+    asm("mov ah, 01h");
+    asm("mov al, 07h");
+    asm("mov cx, 0007h");
+    asm("int 10h");
 }
 
 void rados_console_print_line(const char* string) {
@@ -49,9 +50,9 @@ void rados_console_print_line(const char* string) {
 };
 
 void rados_console_print_char(char character) {
-    asm("mov ah, 0Eh \n"
-        "mov al, character \n"
-        "mov bh, 0 \n"
-        "mov bl, 7 \n"
-        "int 0x10 \n");
+    asm("mov ah, 0Eh");
+    asm("mov al, character");
+    asm("mov bh, 0");
+    asm("mov bl, 7");
+    asm("int 0x10");
 };

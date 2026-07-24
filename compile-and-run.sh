@@ -14,9 +14,16 @@ mkdir build
 clang++ -c src/kernel/kernel.cpp -o build/kernel.o -fuse-ld=lld -masm=intel -Wl -fPIC -shared -nostartfiles -nostdlib -nodefaultlibs
 
 cd build
-objcopy -O binary kernel.o boot.bin
 
-genisoimage -o RadOs.iso -b boot.bin -no-emul-boot -boot-load-size 4 -boot-info-table .
+mkdir files
+
+objcopy -O binary kernel.o kernel.bin
+
+nasm -f bin ./../src/kernel/boot.asm -o boot.bin
+
+cp boot.bin files
+
+genisoimage -o RadOs.iso -b boot.bin -no-emul-boot -boot-load-size 4 -boot-info-table ./files
 
 cd ..
 
